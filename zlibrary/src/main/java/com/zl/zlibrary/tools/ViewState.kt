@@ -10,9 +10,5 @@ class ViewState {
         const val SHOW_ERROR = 2
         const val SHOW_EMPTY = 3
     }
-
-
     var showLayoutType = ObservableField(1)
-
-
 }
