@@ -1,0 +1,2 @@
+include ':app', ':zcommon_module',':zlibrary', ':login_module', ':zalivc_player'
+rootProject.name='BuyerRedMan'
