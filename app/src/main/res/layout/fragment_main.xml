@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="fragment_main_model"
+            type="com.buyer.redman.viewmodel.MainFragmentViewModel" />
+
+
+    </data>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="撒旦飞洒地方撒的发生大飞洒地方"
+            android:textColor="#000000"
+            app:singleClick="@{fragment_main_model.singleClick}"></TextView>
+
+    </LinearLayout>
+</layout>

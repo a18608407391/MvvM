@@ -1,0 +1,62 @@
+apply from: "../module.gradle"
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api rootProject.ext.support["KotlinJre7"]
+    api rootProject.ext.support["KotlinReflect"]
+    api rootProject.ext.support["fragment-ktx"]
+    api rootProject.ext.support["coroutines"]
+    api rootProject.ext.support["recyclerview"]
+    api rootProject.ext.support["compat"]
+    api rootProject.ext.support["core-ktx"]
+    api rootProject.ext.support["viewpager2"]
+    api rootProject.ext.support["constraintlayout"]
+    api rootProject.ext.support["swiperefreshlayout"]
+    //lifecycle组件
+    api rootProject.ext.support["lifecycle-extensions"]
+    api rootProject.ext.support["lifecycle-viewmodel"]
+    api rootProject.ext.support["lifecycle-livedata"]
+    api rootProject.ext.dependencies["multidex"]
+    api rootProject.ext.dependencies["aroute-api"]
+    //navigation组件
+    api rootProject.ext.dependencies["navigation-ktx"]
+    api rootProject.ext.dependencies["navigation-dynamic"]
+    api rootProject.ext.dependencies["navigation-ui-ktx"]
+    api rootProject.ext.dependencies["timber"]
+    //kodein组件
+    api rootProject.ext.dependencies["kodein"]
+    api rootProject.ext.dependencies["kodeinx"]
+    api rootProject.ext.dependencies["coil"]
+    //rxJava
+    api rootProject.ext.dependencies["rxlife"]
+    api rootProject.ext.dependencies["rxandroid"]
+    api rootProject.ext.dependencies["rxjava"]
+    //okHttp
+    api rootProject.ext.dependencies["okHttp"]
+    api rootProject.ext.dependencies["okHttp-logging"]
+    //Gson
+    api rootProject.ext.dependencies["gson"]
+    api rootProject.ext.dependencies["okio"]
+    //retrofit
+    api rootProject.ext.dependencies["retrofit"]
+    api rootProject.ext.dependencies["retrofit-adapter"]
+    api rootProject.ext.dependencies["retrofit-converter"]
+    //Glide
+    api rootProject.ext.dependencies["glide"]
+    api rootProject.ext.dependencies["gpuimage"]
+    api rootProject.ext.dependencies["gpuimage-glide"]
+    annotationProcessor rootProject.ext.dependencies["glide-compiler"]
+
+    //room
+    api rootProject.ext.dependencies["room-rxjava2"]
+    api rootProject.ext.dependencies["pagging"]
+    //屏幕适配
+    api rootProject.ext.dependencies["autosize"]
+    //字体
+    api rootProject.ext.dependencies["calligraphy"]
+    api files('libs/nineoldandroids-2.4.0.jar')
+
+    //按鈕控件
+    api 'mbanje.kurt:fabbutton:1.2.4@aar'
+
+}

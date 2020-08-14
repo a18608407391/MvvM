@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <data>
+
+        <import type="android.view.View"></import>
+
+        <variable
+            name="show_type"
+            type="com.zl.zlibrary.tools.ViewState" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--加载失败-->
+        <ViewStub
+            android:id="@+id/vs_error_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout="@layout/layout_loading_error"
+            android:visibility="@{show_type.showLayoutType==2 ?View.VISIBLE:View.GONE}" />
+
+        <!--加载中..-->
+        <ViewStub
+            android:id="@+id/vs_loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout="@layout/layout_loading_view"
+            android:visibility="@{show_type.showLayoutType==1 ?View.VISIBLE:View.GONE}" />
+
+        <!--数据为空-->
+        <ViewStub
+            android:id="@+id/vs_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout="@layout/layout_loading_empty"
+            android:visibility="@{show_type.showLayoutType==3 ?View.VISIBLE:View.GONE}" />
+
+    </RelativeLayout>
+</layout>

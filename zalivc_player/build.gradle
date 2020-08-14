@@ -1,0 +1,9 @@
+apply from: "../module.gradle"
+
+
+dependencies {
+    implementation project(path: ':zcommon_module')
+//    implementation 'com.aliyun.sdk.android:AliyunPlayer:4.7.4-full'
+//    implementation 'com.alivc.conan:AlivcConan:0.9.5'
+}
+
