@@ -17,7 +17,6 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.zl.library.Entity.PostEntity
 import com.zl.zlibrary.BR
 import com.zl.zlibrary.base.*
 import com.zl.zlibrary.base.activity.IBaseActivity

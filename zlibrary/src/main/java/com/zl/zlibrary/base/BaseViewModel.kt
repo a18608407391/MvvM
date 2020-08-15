@@ -2,6 +2,7 @@ package com.zl.zlibrary.base
 
 import androidx.lifecycle.*
 import com.zl.library.Entity.PostEntity
+import com.zl.zlibrary.Utils.NetException
 import com.zl.zlibrary.Utils.context
 import com.zl.zlibrary.binding.BindingCommand
 import com.zl.zlibrary.binding.BindingConsumer
@@ -48,6 +49,9 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, KodeinAware {
 
 
     class NotifyLiveData : ViewModelEvent<Any>() {
+
+
+
         enum class PageEnum {
             SHOW_CONTENT,
             SHOW_LOADING,
