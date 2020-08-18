@@ -79,7 +79,7 @@ abstract class BaseActivity<V : ViewDataBinding, VM : BaseViewModel> : BaseActiv
 
     private fun registerViewModelNotify() {
         viewModel!!.getNotifyLiveData()!!.getStatusTextColorController()!!.observe(this, Observer {
-            setStatusBarTextColor(it)
+            setStatusBarTextColor(it as Boolean)
         })
         viewModel!!.getNotifyLiveData()!!.getPageStatus()!!.observe(this, Observer {
                 when(it){

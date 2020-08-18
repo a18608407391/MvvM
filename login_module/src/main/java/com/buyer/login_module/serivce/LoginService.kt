@@ -16,6 +16,4 @@ interface  LoginService{
     suspend fun login(@Body builder: PostEntity
     ): LoginModel
 
-
-
 }

@@ -1,2 +1,2 @@
-include ':app', ':zcommon_module',':zlibrary', ':login_module', ':zalivc_player'
+include ':app', ':zcommon_module',':zlibrary', ':login_module', ':zalivc_player', ':camera'
 rootProject.name='BuyerRedMan'

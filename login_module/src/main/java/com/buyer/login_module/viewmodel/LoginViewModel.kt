@@ -1,9 +1,12 @@
 package com.buyer.login_module.viewmodel
 
+import androidx.lifecycle.MutableLiveData
+import com.buyer.login_module.model.LoginModel
 import com.buyer.login_module.repository.impl.LoginRepositoryImpl
 import com.zl.library.Entity.PostEntity
 import com.zl.zlibrary.base.BaseViewModel
 import com.zl.zlibrary.ext.request
+import com.zl.zlibrary.tools.NetState
 import org.kodein.di.generic.instance
 
 
@@ -18,10 +21,8 @@ class LoginViewModel : BaseViewModel() {
         request(
             {
                 loginRepositoryImpl.login(postEntity!!)
-            },
-            getNotifyLiveData()!!.getPageStatus()!!, true, "Loading"
+            }, netState, true, "Loading"
         )
     }
-
 
 }

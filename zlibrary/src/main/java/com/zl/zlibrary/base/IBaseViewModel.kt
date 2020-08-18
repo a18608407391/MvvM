@@ -36,4 +36,7 @@ interface IBaseViewModel : LifecycleObserver {
 
     fun initData(postEntity: PostEntity?)
 
+    @SingleClick
+    fun onSingle(value:String)
+
 }

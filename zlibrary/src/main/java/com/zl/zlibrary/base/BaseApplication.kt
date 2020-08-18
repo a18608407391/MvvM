@@ -57,6 +57,7 @@ open class BaseApplication : MultiDexApplication(), ViewModelStoreOwner {
 
     override fun onCreate() {
         super.onCreate()
+        instanc = this
         doCreated()
     }
 

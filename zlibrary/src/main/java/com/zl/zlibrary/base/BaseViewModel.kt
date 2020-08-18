@@ -1,5 +1,8 @@
 package com.zl.zlibrary.base
 
+import android.util.Log
+import androidx.databinding.ObservableArrayMap
+import androidx.databinding.ObservableMap
 import androidx.lifecycle.*
 import com.zl.library.Entity.PostEntity
 import com.zl.zlibrary.Utils.NetException
@@ -10,18 +13,65 @@ import com.zl.zlibrary.bus.Even.ViewModelEvent
 import com.zl.zlibrary.bus.RxBus
 import com.zl.zlibrary.bus.RxSubscriptions
 import com.zl.zlibrary.even.RxBusEven
+import com.zl.zlibrary.ext.IS_DARK
+import com.zl.zlibrary.ext.NOTIFY_VIEW_STATE
+import com.zl.zlibrary.tools.NetState
 import io.reactivex.disposables.Disposable
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.closestKodein
 
 
 open class BaseViewModel : ViewModel(), IBaseViewModel, KodeinAware {
+    override fun onSingle(value: String) {
+
+    }
+
+
+    var curLenth = 2
+
+    var state = 0
+
+    var netState = MutableLiveData<NetState<String>>()
+
+
+
+
+
+    var evenHandler = ObservableArrayMap<String, ViewModelEvent<Any>>().apply {
+        this.put(NOTIFY_VIEW_STATE, getNotifyLiveData()!!.getPageStatus()!!)
+        this.put(IS_DARK, getNotifyLiveData()!!.getStatusTextColorController())
+    }.also {
+        it.addOnMapChangedCallback(object :
+            ObservableMap.OnMapChangedCallback<ObservableArrayMap<String, ViewModelEvent<Any>>, String, ViewModelEvent<Any>>() {
+            override fun onMapChanged(
+                sender: ObservableArrayMap<String, ViewModelEvent<Any>>?,
+                key: String?
+            ) {
+                //监听集合，一旦新增了
+                if (sender!!.size > curLenth) {
+                    //添加
+                    state = 1
+                    getNotifyLiveData()!!.value = key
+
+                } else if (sender!!.size < curLenth) {
+                    //删除
+                    state = 2
+                    if (sender!!.size == 0) {
+                        //remove
+                        state = 3
+                    }
+                }
+                curLenth = sender.size
+            }
+        })
+    }
 
     var requestParameter: PostEntity? = null
 
 
     override fun initData(postEntity: PostEntity?) {
         //加载数据  为null是无参，不为null是有参数
+
 
     }
 
@@ -48,10 +98,12 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, KodeinAware {
     })
 
 
-    class NotifyLiveData : ViewModelEvent<Any>() {
+    fun setPageState(state: NotifyLiveData.PageEnum) {
+        getNotifyLiveData()!!.getPageStatus()!!.value = state
+    }
 
 
-
+    class NotifyLiveData : ViewModelEvent<String>() {
         enum class PageEnum {
             SHOW_CONTENT,
             SHOW_LOADING,
@@ -59,11 +111,11 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, KodeinAware {
             SHOW_EMPTY
         }
 
-        private var statusTextColor: ViewModelEvent<Boolean>? = null
+        private var statusTextColor: ViewModelEvent<Any>? = null
 
-        private var pagerStatus: ViewModelEvent<PageEnum>? = null
+        private var pagerStatus: ViewModelEvent<Any>? = null
 
-        fun getStatusTextColorController(): ViewModelEvent<Boolean>? {
+        fun getStatusTextColorController(): ViewModelEvent<Any>? {
             if (statusTextColor == null) {
                 statusTextColor = ViewModelEvent()
                 statusTextColor!!.value = true
@@ -71,7 +123,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModel, KodeinAware {
             return statusTextColor
         }
 
-        open fun getPageStatus(): ViewModelEvent<PageEnum>? {
+        open fun getPageStatus(): ViewModelEvent<Any>? {
             if (pagerStatus == null) {
                 pagerStatus = ViewModelEvent()
                 pagerStatus!!.value = PageEnum.SHOW_LOADING

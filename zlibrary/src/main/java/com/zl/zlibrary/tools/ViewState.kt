@@ -1,6 +1,7 @@
 package com.zl.zlibrary.tools
 
 import androidx.databinding.ObservableField
+import androidx.lifecycle.MutableLiveData
 
 
 class ViewState {
@@ -10,5 +11,5 @@ class ViewState {
         const val SHOW_ERROR = 2
         const val SHOW_EMPTY = 3
     }
-    var showLayoutType = ObservableField(1)
+    var showLayoutType = MutableLiveData(SHOW_LOADING)
 }

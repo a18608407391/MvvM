@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewStub
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.CallSuper
@@ -17,22 +16,19 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.zl.zlibrary.BR
 import com.zl.zlibrary.base.*
 import com.zl.zlibrary.base.activity.IBaseActivity
-import com.zl.zlibrary.tools.ViewState
-import com.zl.zlibrary.tools.ViewState.Companion.SHOW_CONTENT
-import com.zl.zlibrary.tools.ViewState.Companion.SHOW_EMPTY
-import com.zl.zlibrary.tools.ViewState.Companion.SHOW_ERROR
-import com.zl.zlibrary.tools.ViewState.Companion.SHOW_LOADING
 import com.zl.zlibrary.R
 import com.zl.zlibrary.Utils.ClassUtil
+import com.zl.zlibrary.bus.Even.ViewModelEvent
+import com.zl.zlibrary.ext.loge
+import com.zl.zlibrary.ext.observe
+import com.zl.zlibrary.ext.parseState
 
 
 abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment() {
 
 
-    var state = ViewState()
     var bindingView: V? = null
     var viewModelId = 0
     var mViewModel: VM? = null
@@ -49,6 +45,7 @@ abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _mActivity = activity as IBaseActivity
         var base =
             DataBindingUtil.inflate<ViewDataBinding>(inflater, R.layout.fragment_base, null, false)
         var inflate = base.root
@@ -62,23 +59,9 @@ abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment(
         mViewModel = initViewModel()
         bindingView?.setVariable(viewModelId, mViewModel)
         bindingView?.root?.visibility = View.GONE
-        loadingView = (inflate.findViewById<ViewStub>(R.id.vs_loading)).inflate()
-        errorView = (inflate.findViewById<ViewStub>(R.id.vs_error_refresh)).inflate()
-        errorView!!.findViewById<LinearLayout>(R.id.reload_layout).setOnClickListener {
-            mViewModel!!.initData(mViewModel!!.requestParameter!!)
-        }
-        var img = loadingView?.findViewById<ImageView>(R.id.img_progress)
-        // 加载动画
-        mAnimationDrawable = img!!.getDrawable() as AnimationDrawable?
-        // 默认进入页面就开启动画
-        if (!mAnimationDrawable!!.isRunning) {
-            mAnimationDrawable!!.start()
-        }
         lifecycle.addObserver(mViewModel!!)
-        base.setVariable(BR.show_type, state)
         var mContainer = inflate.findViewById<RelativeLayout>(R.id.container)
         mContainer.addView(bindingView?.root)
-
         return inflate
     }
 
@@ -86,7 +69,6 @@ abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment(
     abstract fun initVariableId(): Int
 
     abstract fun setContent(): Int
-
 
     fun initViewModel(): VM {
         val viewModelClass: Class<VM> = ClassUtil.getViewModel(this)
@@ -116,20 +98,36 @@ abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment(
     }
 
     fun loadData() {
-        registerViewModelNotify()
+
     }
 
     fun onInvisible() {
     }
 
+
     private fun registerViewModelNotify() {
-        mViewModel!!.getNotifyLiveData()!!.getStatusTextColorController()!!.observe(this, Observer {
-            _mActivity!!.setStatusBarTextColor(it)
+        observe(mViewModel!!.getNotifyLiveData()!!, Observer {
+            //处理新增的通知
+            doNotifyEven(it)
         })
 
-        mViewModel!!.getNotifyLiveData()!!.getPageStatus()!!.observe(this, Observer {
+        observe(mViewModel!!.netState!!, Observer {
+            parseState(it,{
+
+            }, {
+                //登录失败
+//                showMessage(it.errorMsg)
+            })
+        })
+        //下面处理默认通知
+
+        observe(mViewModel!!.getNotifyLiveData()!!.getStatusTextColorController()!!, Observer {
+            _mActivity!!.setStatusBarTextColor(it as Boolean)
+        })
+        observe(mViewModel!!.getNotifyLiveData()!!.getPageStatus()!!, Observer {
             when (it) {
                 BaseViewModel.NotifyLiveData.PageEnum.SHOW_CONTENT -> {
+                    "显示主布局".loge()
                     showContent()
                 }
                 BaseViewModel.NotifyLiveData.PageEnum.SHOW_LOADING -> {
@@ -145,7 +143,19 @@ abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment(
         })
     }
 
+
+
+    /**
+     * 后期业务会有更多的viewmodel与view的交互，此处为自定义消息类型
+     * */
+    open fun doNotifyEven(it: String) {
+           //处理自定义通知
+
+
+    }
+
     fun showContent() {
+
         if (bindingView!!.root.visibility != View.VISIBLE) {
             bindingView!!.root.visibility = View.VISIBLE
         }
@@ -153,8 +163,16 @@ abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment(
         if (mAnimationDrawable != null && mAnimationDrawable!!.isRunning) {
             mAnimationDrawable!!.stop()
         }
+        if (errorView != null) {
+            errorView!!.visibility = View.GONE
+        }
+        if (loadingView != null) {
+            loadingView!!.visibility = View.GONE
+        }
+        if (emptyView != null) {
+            emptyView!!.visibility = View.GONE
+        }
 
-        state.showLayoutType.set(SHOW_CONTENT)
     }
 
     fun showError() {
@@ -167,12 +185,17 @@ abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment(
                 onRefresh()
             }
         }
-        state.showLayoutType.set(SHOW_ERROR)
+        if (loadingView != null) {
+            loadingView!!.visibility = View.GONE
+        }
+        if (emptyView != null) {
+            emptyView!!.visibility = View.GONE
+        }
+        if (bindingView != null && bindingView!!.root.visibility != View.GONE) {
+            bindingView!!.root.visibility = View.GONE
+        }
         if (mAnimationDrawable != null && mAnimationDrawable!!.isRunning) {
             mAnimationDrawable!!.stop()
-        }
-        if (bindingView?.root?.visibility != View.GONE) {
-            bindingView?.root?.visibility = View.GONE
         }
     }
 
@@ -187,13 +210,19 @@ abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment(
             var img = loadingView?.findViewById<ImageView>(R.id.img_progress);
             mAnimationDrawable = img?.drawable as AnimationDrawable
         }
-        state.showLayoutType.set(SHOW_LOADING)
+        if (errorView != null && errorView!!.visibility == View.VISIBLE) {
+            errorView!!.visibility = View.GONE
+        }
+
+        if (bindingView != null) {
+            bindingView!!.root.visibility = View.GONE
+        }
+        if (emptyView != null) {
+            emptyView!!.visibility = View.GONE
+        }
         // 开始动画
         if (mAnimationDrawable != null && !mAnimationDrawable!!.isRunning) {
             mAnimationDrawable!!.start()
-        }
-        if (bindingView?.root?.visibility != View.GONE) {
-            bindingView?.root?.visibility = View.GONE;
         }
     }
 
@@ -206,12 +235,16 @@ abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment(
             emptyView = viewStub.inflate()
             emptyView!!.findViewById<TextView>(R.id.tv_tip_empty).text = text
         }
-        state.showLayoutType.set(SHOW_EMPTY)
         // 停止动画
         if (mAnimationDrawable != null && mAnimationDrawable?.isRunning!!) {
             mAnimationDrawable?.stop()
         }
-
+        if (errorView != null) {
+            errorView!!.visibility = View.GONE
+        }
+        if (loadingView != null) {
+            loadingView!!.visibility = View.GONE
+        }
         if (bindingView != null && bindingView!!.root.visibility != View.GONE) {
             bindingView?.root?.visibility = View.GONE
         }
@@ -235,13 +268,13 @@ abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        showLoading()
         initData()
 
     }
 
     open fun initData() {
-
+        registerViewModelNotify()
     }
 
     @CallSuper
@@ -291,7 +324,7 @@ abstract class BaseFragment<V : ViewDataBinding, VM : BaseViewModel> : Fragment(
         super.onDetach()
     }
 
-    protected var _mActivity: IBaseActivity? = null
+     var _mActivity: IBaseActivity? = null
 
 
 }

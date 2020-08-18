@@ -17,6 +17,9 @@ open class ViewModelEvent<T> : MutableLiveData<T>() {
         var mPending: AtomicBoolean = AtomicBoolean(false)
     }
 
+
+
+
     @MainThread
     override fun observe(owner: LifecycleOwner, observer: Observer<in T>) {
 

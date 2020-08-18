@@ -18,7 +18,10 @@ import java.util.concurrent.TimeUnit
  * */
 internal const val MODULE_NAME = "Base"
 
+const val BaseUrl = ""
+
 const val HTTP_CLIENT_MODULE_TAG = "httpClientModule"
+
 const val TIME_OUT_SECONDS = 30L
 
 val baseModule = Kodein.Module("${MODULE_NAME}Module") {
@@ -43,7 +46,7 @@ val baseModule = Kodein.Module("${MODULE_NAME}Module") {
 
     bind<Retrofit>() with singleton {
         instance<Retrofit.Builder>()
-            .baseUrl("")
+            .baseUrl(BaseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .client(instance())
             .build()
