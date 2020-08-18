@@ -29,9 +29,7 @@ class UriParser {
             var videoApi: Byte = 0
             var params = URLEncodedUtils.parse(URI.create(uri), "UTF-8")
             if (params.size > 0) {
-
                 builder.setAudioEncoder(AUDIO_NONE).setVideoEncoder(VIDEO_NONE)
-
                 // Those parameters must be parsed first or else they won't necessarily be taken into account
                 val it = params.iterator()
                 while (it.hasNext()) {
