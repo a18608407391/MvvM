@@ -13,16 +13,16 @@ class Session {
 
     val STREAM_AUDIO = 0x00
 
-    /** Some app is already using a camera (Camera.open() has failed).  */
+    /** 某些应用已在使用摄像头(摄像头打开（）失败）*/
     val ERROR_CAMERA_ALREADY_IN_USE = 0x00
 
-    /** The phone may not support some streaming parameters that you are using (bit rate, frame rate...s).  */
+    /** 手机可能不支持您正在使用的某些流媒体参数（比特率、帧速率…s）。*/
     val ERROR_CONFIGURATION_NOT_SUPPORTED = 0x01
 
     /**
-     * The internal storage of the phone is not ready.
-     * Libstreaming tried to store a test file on the sdcard but couldn't.
-     * See H264Stream and AACStream to find out why libstreaming would want to something like that.
+     * T手机的内部存储器没有准备好。
+     * 尝试在SD卡上存储测试文件，但无法。
+     * 请参阅H264Stream和AACStream，以了解libstreaming为什么要这样做。
      */
     val ERROR_STORAGE_NOT_READY = 0x02
 
@@ -33,9 +33,8 @@ class Session {
     val ERROR_INVALID_SURFACE = 0x04
 
     /**
-     * The destination set with [Session.setDestination] could not be resolved.
-     * May mean that the phone has no access to the internet, or that the DNS server could not
-     * resolved the host name.
+     *  没有网无法识别host
+     *
      */
     val ERROR_UNKNOWN_HOST = 0x05
 
