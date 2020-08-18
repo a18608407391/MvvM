@@ -70,6 +70,29 @@ class Session {
         return mVideoStream!!
     }
 
+    fun isStreaming(): Boolean {
+        return mAudioStream != null && mAudioStream!!.isStreaming() || mVideoStream != null && mVideoStream!!.isStreaming()
+    }
+
+
+    fun stop(){
+        sHandler!!.post { syncStop() }
+    }
+    private fun syncStop(id: Int) {
+        val stream = if (id == 0) mAudioStream else mVideoStream
+        stream?.stop()
+    }
+
+    fun syncStop() {
+        syncStop(0)
+        syncStop(1)
+        postSessionStopped()
+    }
+
+    private fun postSessionStopped() {
+
+    }
+
     interface Callback {
 
     }

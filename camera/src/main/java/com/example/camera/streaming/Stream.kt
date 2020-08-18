@@ -75,8 +75,8 @@ interface Stream {
      fun getBitrate(): Long
 
     /**
-     * Returns a description of the stream using SDP.
-     * This method can only be called after [Stream.configure].
+     *  返回一个描述流 SDP描述会话的协议.
+     *  configure 以后使用 [Stream.configure].
      * @throws IllegalStateException Thrown when [Stream.configure] wa not called.
      */
     @Throws(IllegalStateException::class)

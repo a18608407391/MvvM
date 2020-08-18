@@ -9,7 +9,7 @@ import com.example.camera.streaming.rtp.AbstractPacketizer
 import java.net.InetAddress
 
 
-class MediaStream : Stream {
+open class MediaStream : Stream {
 
 
     /** 将读取摄像机输出并通过网络发送RTP包的打包程序。 */
@@ -66,6 +66,7 @@ class MediaStream : Stream {
         mRequestedMode = sSuggestedMode
         mMode = sSuggestedMode
     }
+
 
 
     override fun configure() {

@@ -1,8 +1,9 @@
 package com.example.camera.streaming.video
 
+import com.example.camera.streaming.MediaStream
 
 
-class VideoStream{
+class VideoStream :MediaStream{
 
 
     constructor()
