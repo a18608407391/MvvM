@@ -30,7 +30,7 @@ class UriParser {
             var params = URLEncodedUtils.parse(URI.create(uri), "UTF-8")
             if (params.size > 0) {
                 builder.setAudioEncoder(AUDIO_NONE).setVideoEncoder(VIDEO_NONE)
-                // Those parameters must be parsed first or else they won't necessarily be taken into account
+                // 必须首先解析这些参数，否则就不必考虑它们
                 val it = params.iterator()
                 while (it.hasNext()) {
                     val param = it.next()
@@ -107,14 +107,14 @@ class UriParser {
                     // AMR
                     // H.263
                     // H.264
-                    // TTL -> the client can modify the time to live of packets
+                    // TTL -> 客户端可以修改数据包的生存时间
                     // By default ttl=64
-                    // AUDIOAPI -> can be used to specify what api will be used to encode audio (the MediaRecorder API or the MediaCodec API)
-                    // VIDEOAPI -> can be used to specify what api will be used to encode video (the MediaRecorder API or the MediaCodec API)
-                    // UNICAST -> the client can use this to specify where he wants the stream to be sent
-                    // MULTICAST -> the stream will be sent to a multicast group
-                    // The default mutlicast address is 228.5.6.7, but the client can specify another
-                    // CAMERA -> the client can choose between the front facing camera and the back facing camera
+                    // AUDIOAPI -> 可用于指定将用于编码音频的api（MediaRecorder api或MediaCodec api）
+                    // VIDEOAPI -> 可用于指定将用于编码视频的api（MediaRecorder api或MediaCodec api）
+                    // UNICAST -> 客户机可以使用它来指定他希望流发送到哪里
+                    // MULTICAST -> 流将被发送到多播组
+                    // 默认的mutlicast地址是228.5.6.7，但是客户端可以指定另一个地址
+                    // CAMERA -> 客户可以在前置摄像头和后置摄像头之间进行选择
 
                 }
 

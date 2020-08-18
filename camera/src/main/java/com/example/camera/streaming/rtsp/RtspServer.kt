@@ -6,6 +6,8 @@ import android.content.SharedPreferences
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
+import com.example.camera.config.KEY_ENABLED
+import com.example.camera.config.KEY_PORT
 import com.example.camera.session.Session
 import com.example.camera.session.SessionBuilder
 import com.zl.zlibrary.Utils.PreferenceUtils
@@ -30,29 +32,25 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
 
     val TAG = "RtspServer"
 
-    /** The server name that will appear in responses.  */
-    var SERVER_NAME = "MajorKernelPanic RTSP Server"
+    /** 服务名 */
+    var SERVER_NAME = "RTSP Server"
 
-    /** Port used by default.  */
+    /**RTSP默认端口  */
     val DEFAULT_RTSP_PORT = 8086
 
-    /** Port already in use.  */
+    /** 绑定失败，已有连接  */
     val ERROR_BIND_FAILED = 0x00
 
-    /** A stream could not be started.  */
+    /** 无法开启流.  */
     val ERROR_START_FAILED = 0x01
 
-    /** Streaming started.  */
+    /** 开始推流 */
     val MESSAGE_STREAMING_STARTED = 0X00
 
-    /** Streaming stopped.  */
+    /** 停止  */
     val MESSAGE_STREAMING_STOPPED = 0X01
 
-    /** Key used in the SharedPreferences to store whether the RTSP server is enabled or not.  */
-    val KEY_ENABLED = "rtsp_enabled"
 
-    /** Key used in the SharedPreferences for the port used by the RTSP server.  */
-    val KEY_PORT = "rtsp_port"
 
     protected var mSessionBuilder: SessionBuilder? = null
     protected var mEnabled = true
@@ -148,10 +146,10 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
     }
 
     /**
-     * By default the RTSP uses [UriParser] to parse the URI requested by the client
-     * but you can change that behavior by override this method.
-     * @param uri The uri that the client has requested
-     * @param client The socket associated to the client
+     * 默认情况下，RTSP使用[UriParser]解析客户端请求的URI
+     * 也可以通过重写此方法来更改该行为。
+     * @param uri  请求的Uri
+     * @param client 与客户端关联的套接字
      * @return A proper session
      */
     @Throws(IllegalStateException::class, IOException::class)
@@ -335,7 +333,7 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
         }
 
         class Response {
-            // Status code definitions
+            // 定义状态值
             companion object {
                 val STATUS_OK = "200 OK"
                 val STATUS_BAD_REQUEST = "400 Bad Request"
@@ -354,7 +352,6 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
             }
 
             constructor() {
-                // Be carefull if you modify the send() method because request might be null !
                 mRequest = null
             }
         }
