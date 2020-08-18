@@ -189,6 +189,7 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
                     // Client has left
                     break
                 } catch (e: Exception) {
+
                     // We don't understand the request :/
                     response = Response()
                     response.status = Response.STATUS_BAD_REQUEST
