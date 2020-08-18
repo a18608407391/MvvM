@@ -1,6 +1,13 @@
 apply from: "../module.gradle"
 
-
+android {
+    useLibrary 'org.apache.http.legacy'
+}
 dependencies {
     api project(path: ':zcommon_module')
+    implementation files('libs/acra-4.4.0.jar')
+    implementation files('libs/GoogleAdMobAdsSdk-6.1.0.jar')
+    implementation files('libs/sc-light-jdk15on-1.47.0.2.jar')
+    implementation files('libs/scpkix-jdk15on-1.47.0.2.jar')
+    implementation files('libs/scprov-jdk15on-1.47.0.2.jar')
 }

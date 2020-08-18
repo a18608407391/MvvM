@@ -93,6 +93,22 @@ class Session {
 
     }
 
+    fun syncConfigure() {
+    }
+
+    fun getSessionDescription(): String {
+
+        return null!!
+    }
+
+    fun setDestination(hostAddress: String?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun setOrigin(hostAddress: String?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     interface Callback {
 
     }

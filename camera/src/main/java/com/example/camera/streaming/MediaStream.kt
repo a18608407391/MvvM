@@ -99,7 +99,9 @@ open class MediaStream : Stream {
             mRtcpPort = dport + 1
         }
     }
-
+    fun setStreamingMethod(mode: Byte) {
+        mRequestedMode = mode
+    }
     override fun setDestinationPorts(rtpPort: Int, rtcpPort: Int) {
         mRtpPort = rtpPort
         mRtcpPort = rtcpPort

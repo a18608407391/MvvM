@@ -10,6 +10,7 @@ import com.example.camera.session.Session
 import com.example.camera.session.SessionBuilder
 import com.zl.zlibrary.Utils.PreferenceUtils
 import com.zl.zlibrary.Utils.context
+import com.zl.zlibrary.ext.loge
 import java.io.*
 import java.net.BindException
 import java.net.ServerSocket
@@ -146,8 +147,24 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
 
     }
 
+    /**
+     * By default the RTSP uses [UriParser] to parse the URI requested by the client
+     * but you can change that behavior by override this method.
+     * @param uri The uri that the client has requested
+     * @param client The socket associated to the client
+     * @return A proper session
+     */
+    @Throws(IllegalStateException::class, IOException::class)
+    protected fun handleRequest(uri: String, client: Socket): Session {
+        var session = UriParser.parse(uri)
+        session.setOrigin(client.localAddress.hostAddress)
+        if (session.mDestination == null) {
+            session.setDestination(client.inetAddress.hostAddress)
+        }
+        return session
+    }
 
-    class WorkerThread : Thread, Runnable {
+    inner class WorkerThread : Thread, Runnable {
         private var mClient: Socket
         private var mOutput: OutputStream
         private var mInput: BufferedReader
@@ -163,8 +180,8 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
         override fun run() {
             super.run()
             //解析流
-            var request: Request
-            var response: Response
+            var request: Request = null!!
+            var response: Response = null!!
             while (!interrupted()) {
                 try {
                     request = Request.parseRequest(mInput)
@@ -176,8 +193,56 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
                     response = Response()
                     response.status = Response.STATUS_BAD_REQUEST
                 }
+                /**
+                 * 相应地执行一些操作，如启动流、发送会话描述
+                 * */
+                if (request != null) {
+                    try {
+                        response = processRequest(request)
+                    } catch (e: Exception) {
+                        /**
+                         * 这会提醒主线程该线程中出现了错误
+                         * */
+                        postError(e, ERROR_START_FAILED)
+                        Log.e(TAG, if (e.message != null) e.message else "An error occurred")
+                        e.printStackTrace()
+                        response = Response(request)
+                    }
+                }
+            }
+
+        }
+
+        fun processRequest(request: Request): Response {
+            var response = Response(request)
+            /***
+             * 处理响应体
+             */
+            /* ********************************************************************************** */
+            /* ********************************* Method DESCRIBE ******************************** */
+            /* ********************************************************************************** */
+            if (request.method.equals("DESCRIBE", ignoreCase = true)) run {
+
+                // Parse the requested URI and configure the session
+                mSession = handleRequest(request.uri!!, mClient)
+                mSessions[mSession] = null
+                mSession.syncConfigure()
+
+                val requestContent = mSession.getSessionDescription()
+                val requestAttributes =
+                    "Content-Base: " + mClient.localAddress.hostAddress + ":" + mClient.localPort + "/\r\n" +
+                            "Content-Type: application/sdp\r\n"
+
+                response.attributes = requestAttributes
+                response.content = requestContent
+
+                // If no exception has been thrown, we reply with OK
+                response.status = Response.STATUS_OK
 
             }
+
+
+            return response
         }
     }
 
@@ -260,28 +325,9 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
                                 matcher.group(2)
                         }
                     }
+                    if (line == null) throw SocketException("Client disconnected")
 
-                    // Parsing request method & uri
-//                    if ((line = input.readLine()) == null
-//                    ) throw SocketException("Client disconnected")
-
-//                    matcher.find()
-//                    request.method = matcher.group(1)
-//                    request.uri = matcher.group(2)
-//
-//                    // Parsing headers of the request
-//                    while ((line = input.readLine()) != null && line!!.length > 3) {
-//                        matcher = rexegHeader.matcher(line)
-//                        matcher.find()
-//                        request.headers.put(
-//                            matcher.group(1)!!.toLowerCase(Locale.US),
-//                            matcher.group(2)
-//                        )
-//                    }
-//                    if (line == null) throw SocketException("Client disconnected")
-//
-//                    // It's not an error, it's just easier to follow what's happening in logcat with the request in red
-//                    Log.e(TAG, request.method + " " + request.uri)
+                    (request.method + " " + request.uri).loge(this.javaClass.simpleName)
                     return request
                 }
             }
