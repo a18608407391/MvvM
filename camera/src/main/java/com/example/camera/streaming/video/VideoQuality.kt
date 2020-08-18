@@ -12,7 +12,6 @@ class VideoQuality {
         this.resX = resX
         this.resY = resY
         this.framerate = framerate
-
         this.bitrate = bitrate
     }
 
