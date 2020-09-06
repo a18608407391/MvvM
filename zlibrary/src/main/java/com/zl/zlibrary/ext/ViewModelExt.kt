@@ -15,12 +15,13 @@ fun <T> BaseViewModel.request(
     block: suspend () -> BaseResponse<T>,
     state: MutableLiveData<NetState<T>>,
     isShowDialog: Boolean = false,
-    loadingMessage: String = "请求网络中..."
+    loadingMessage: String
 ): Job {
     return viewModelScope.launch {
         runCatching {
             if (isShowDialog) state.value = NetState.onRequestLoading(loadingMessage)
             //请求体
+
             block()
         }.onSuccess {
             state.paresResult(it)
@@ -42,27 +43,16 @@ fun <T> BaseFragment<*,*>.parseState(
     onLoading: (() -> Unit)? = null
 
 ) {
-
     when (resultState) {
-
         is NetState.Loading -> {
-
             _mActivity!!.showProgressDialog(resultState.loadingMessage)
-
             onLoading?.invoke()
-
         }
-
         is NetState.Success -> {
-
             _mActivity!!.dismissProgressDialog()
-
             onSuccess(resultState.data)
-
         }
-
         is NetState.Error -> {
-
             _mActivity!!.dismissProgressDialog()
 
             onError?.run {

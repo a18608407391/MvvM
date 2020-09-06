@@ -20,9 +20,6 @@ val Context.screenWidth
 val Context.screenHeight
     get() = resources.displayMetrics.heightPixels
 
-//val Context.real_screenWidth
-//get() = resources.displayMetrics.
-
 val Context.getStatusBarHeight
 get() =this.resources.getDimensionPixelSize(this.resources.getIdentifier("status_bar_height", "dimen", "android"))
 

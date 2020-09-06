@@ -69,4 +69,7 @@ class CameraApplicationInit : SharedPreferences.OnSharedPreferenceChangeListener
         var sp = PreferenceUtils.getSp(app)
         sp.registerOnSharedPreferenceChangeListener(this)
     }
+
+
+
 }

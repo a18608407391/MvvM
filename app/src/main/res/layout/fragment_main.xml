@@ -15,14 +15,23 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_fragment"
+        <androidx.viewpager2.widget.ViewPager2
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="撒旦飞洒地方撒的发生大飞洒地方"
-            android:textColor="#000000"
-            app:singleClick="@{fragment_main_model.singleClick}"></TextView>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/mainViewpager"
 
+            />
+
+        <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
+            android:id="@+id/mainBottom"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/white"
+            app:menu="@menu/menu_navigation"
+            app:itemIconTint="@color/bottom_selector"
+            app:itemTextColor="@color/bottom_selector"
+            app:itemIconSize="20dp"
+            />
     </LinearLayout>
 </layout>

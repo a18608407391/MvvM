@@ -133,10 +133,6 @@ class SessionBuilder {
         return this
     }
 
-    fun setAudioEncoder() {
-
-    }
-
     fun setTimeToLive(mTimeToLive: Int): SessionBuilder {
         this.mTimeToLive = mTimeToLive
         return this

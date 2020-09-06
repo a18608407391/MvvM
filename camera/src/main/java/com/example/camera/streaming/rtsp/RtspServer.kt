@@ -14,10 +14,7 @@ import com.zl.zlibrary.Utils.PreferenceUtils
 import com.zl.zlibrary.Utils.context
 import com.zl.zlibrary.ext.loge
 import java.io.*
-import java.net.BindException
-import java.net.ServerSocket
-import java.net.Socket
-import java.net.SocketException
+import java.net.*
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -87,6 +84,15 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
             if (mListeners.size > 0) {
                 for (cl in mListeners) {
                     cl.onError(this, exception, id)
+                }
+            }
+        }
+    }
+    protected fun postMessage(id: Int) {
+        synchronized(mListeners) {
+            if (mListeners.size > 0) {
+                for (cl in mListeners) {
+                    cl.onMessage(this, id)
                 }
             }
         }
@@ -161,6 +167,14 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
         }
         return session
     }
+    fun isStreaming(): Boolean {
+        for (session in mSessions.keys) {
+            if (session != null) {
+                if (session.isStreaming()) return true
+            }
+        }
+        return false
+    }
 
     inner class WorkerThread : Thread, Runnable {
         private var mClient: Socket
@@ -221,8 +235,31 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
             /* ********************************* Method DESCRIBE ******************************** */
             /* ********************************************************************************** */
             if (request.method.equals("DESCRIBE", ignoreCase = true)) run {
-
                 // Parse the requested URI and configure the session
+                /**
+                 * S->C
+                 *  RTSP/1.0 200 OK
+                CSeq: 2
+                Content-Base: rtsp://example.com/media.mp4
+                Content-Type: application/sdp
+                Content-Length: 460
+                m=video 0 RTP/AVP 96
+                a=control:streamid=0
+                a=range:npt=0-7.741000
+                a=length:npt=7.741000
+                a=rtpmap:96 MP4V-ES/5544
+                a=mimetype:string;"video/MP4V-ES"
+                a=AvgBitRate:integer;304018
+                a=StreamName:string;"hinted video track"
+                m=audio 0 RTP/AVP 97
+                a=control:streamid=1
+                a=range:npt=0-7.712000
+                a=length:npt=7.712000
+                a=rtpmap:97 mpeg4-generic/32000/2
+                a=mimetype:string;"audio/mpeg4-generic"
+                a=AvgBitRate:integer;65790
+                a=StreamName:string;"hinted audio track"
+                 * */
                 mSession = handleRequest(request.uri!!, mClient)
                 mSessions[mSession] = null
                 mSession.syncConfigure()
@@ -238,7 +275,106 @@ class RtspServer : Service(), SharedPreferences.OnSharedPreferenceChangeListener
                 // If no exception has been thrown, we reply with OK
                 response.status = Response.STATUS_OK
 
+            } else if (request.method.equals("OPTIONS", ignoreCase = true)) run {
+
+                /***
+                 *
+                 * RTSP/1.0 200 OK
+                   CSeq: 1
+                   Public: DESCRIBE, SETUP, TEARDOWN, PLAY, PAUSE
+                 */
+                response.status = Response.STATUS_OK
+                response.attributes = "Public: DESCRIBE,SETUP,TEARDOWN,PLAY,PAUSE\r\n"
+                response.status = Response.STATUS_OK
+            } else if (request.method.equals("SETUP", ignoreCase = true)) run {
+
+                /**
+                 *
+                 *
+                 * S->C: RTSP/1.0 200 OK
+                 *       CSeq: 3
+                 *       Transport: RTP/AVP;unicast;client_port=8000-8001;server_port=9000-9001;ssrc=1234ABCD
+                 *       Session: 12345678
+                 *       */
+
+                var p: Pattern
+                var m: Matcher
+                var p2: Int
+                var p1: Int
+                var ssrc: Int
+                var trackId: Int
+                var src: IntArray
+                var destination: String
+
+                p = Pattern.compile("trackID=(\\w+)", Pattern.CASE_INSENSITIVE)
+                m = p.matcher(request.uri)
+
+                if (!m.find()) {
+                    response.status = Response.STATUS_BAD_REQUEST
+                    return response
+                }
+
+                trackId = Integer.parseInt(m.group(1)!!)
+
+                if (!mSession.trackExists(trackId)) {
+                    response.status = Response.STATUS_NOT_FOUND
+                    return response
+                }
+
+                p = Pattern.compile("client_port=(\\d+)-(\\d+)", Pattern.CASE_INSENSITIVE)
+                m = p.matcher(request.headers["transport"]!!)
+
+                if (!m.find()) {
+                    val ports = mSession.getTrack(trackId)!!.getDestinationPorts()
+                    p1 = ports[0]
+                    p2 = ports[1]
+                } else {
+                    p1 = Integer.parseInt(m.group(1)!!)
+                    p2 = Integer.parseInt(m.group(2)!!)
+                }
+
+
+                //获取SSRC
+                ssrc = mSession.getTrack(trackId)!!.getSSRC()
+
+
+                //获取服务端口
+                src = mSession.getTrack(trackId)!!.getLocalPorts()
+                destination = mSession.mDestination!!
+
+
+                //设置目标客户端端口
+                mSession.getTrack(trackId)!!.setDestinationPorts(p1, p2)
+
+                var streaming = isStreaming()
+
+
+                mSession.syncStart(trackId)
+                if (!streaming && isStreaming()) {
+                    postMessage(MESSAGE_STREAMING_STARTED)
+                }
+
+                response.attributes =
+                    "Transport: RTP/AVP/UDP;" + (if (InetAddress.getByName(destination).isMulticastAddress) "multicast" else "unicast") +
+                            ";destination=" + mSession.mDestination +
+                            ";client_port=" + p1 + "-" + p2 +
+                            ";server_port=" + src[0] + "-" + src[1] +
+                            ";ssrc=" + Integer.toHexString(ssrc) +
+                            ";mode=play\r\n" +
+                            "Session: " + "1185d20035702ca" + "\r\n" +
+                            "Cache-Control: no-cache\r\n"
+
+                response.status = Response.STATUS_OK
+
+                // If no exception has been thrown, we reply with OK
+                response.status = Response.STATUS_OK
+
+
+
             }
+
+
+
 
 
             return response

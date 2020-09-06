@@ -60,6 +60,7 @@ ext {
             "multidex"              : "2.0.0",
             "gpuimage"              :"1.4.1",
             "glide-transformations" : "2.0.2",
+            "bottom_navigation"     :"2.0.4",
 
     ]
     //support配置
@@ -125,5 +126,6 @@ ext {
             "gpuimage"          : "jp.co.cyberagent.android.gpuimage:gpuimage-library:${versions["gpuimage"]}",
             "gpuimage-glide"    : "jp.wasabeef:glide-transformations:${versions["glide-transformations"]}",
             "calligraphy"       : "uk.co.chrisjenx:calligraphy:${versions["calligraphy"]}",
+            "bottom_navigation" : "com.github.ittianyu:BottomNavigationViewEx:${versions["bottom_navigation"]}",
     ]
 }

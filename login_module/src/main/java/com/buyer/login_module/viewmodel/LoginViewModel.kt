@@ -21,7 +21,7 @@ class LoginViewModel : BaseViewModel() {
         request(
             {
                 loginRepositoryImpl.login(postEntity!!)
-            }, netState, true, "Loading"
+            }, netState, true, "正在加载中......"
         )
     }
 

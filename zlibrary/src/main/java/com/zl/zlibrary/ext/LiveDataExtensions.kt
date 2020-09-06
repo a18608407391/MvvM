@@ -18,10 +18,6 @@ fun <T> MutableLiveData<NetState<T>>.paresResult(result: BaseResponse<T>) {
         NetState.onRequestError(NetException(result.code, result.msg))
 }
 
-
-
-
 fun <T> MutableLiveData<NetState<T>>.paresException(e: Throwable) {
-    ///
     this.value = NetState.onRequestError(ExceptionHandle.handleException(e))
 }

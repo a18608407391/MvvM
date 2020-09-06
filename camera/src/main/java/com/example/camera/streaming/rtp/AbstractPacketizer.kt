@@ -4,6 +4,11 @@ import com.example.camera.streaming.rtcp.SenderReport
 import java.io.IOException
 
 
+
+
+/**
+ * 抽象打包器
+ * */
 class AbstractPacketizer{
 
 
@@ -18,6 +23,10 @@ class AbstractPacketizer{
 
     fun getRtcpSocket(): SenderReport {
         return socket!!.getRtcpSocket()
+    }
+
+    fun setTimeToLive(mTTL: Int) {
+        socket!!.setTimeToLive(mTTL)
     }
 
 }

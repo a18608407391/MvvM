@@ -63,6 +63,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     api project(path: ':login_module')
+    implementation rootProject.ext.dependencies["bottom_navigation"]
 //    implementation platform('com.mpaas.android:mpaas-baseline:10.1.68-6')
     // H5 容器 pom
 //    implementation 'com.mpaas.android:nebula'

@@ -13,7 +13,6 @@ import com.zl.zlibrary.R;
 
 
 /**
- * @see {@link BindingCollectionAdapters}
  */
 public class BindingViewPager2Adapters {
     // RecyclerView

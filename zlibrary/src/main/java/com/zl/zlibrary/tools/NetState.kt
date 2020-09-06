@@ -9,8 +9,8 @@ sealed class NetState<out T> {
         fun <T> onRequestError(error: NetException): NetState<T> = Error(error)
     }
 
-    data class Loading(val loadingMessage: String) : NetState<Nothing>()
+    data class Loading(var loadingMessage: String) : NetState<Nothing>()
     data class Success<out T>(val data: T) : NetState<T>()
-    data class Error(val error: NetException) : NetState<Nothing>()
+    data class Error(var error: NetException) : NetState<Nothing>()
 
 }

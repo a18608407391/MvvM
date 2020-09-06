@@ -33,7 +33,7 @@ class UriParser {
                 // 必须首先解析这些参数，否则就不必考虑它们
                 val it = params.iterator()
                 while (it.hasNext()) {
-                    val param = it.next()
+                    var param = it.next()
                     // FLASH ON/OFF
                     if (param.name == "flash") {
                         if (param.value == "on")
@@ -48,7 +48,7 @@ class UriParser {
                     } else if (param.name =="multicast") {
                         if (param.value != null) {
                             try {
-                                val addr = InetAddress.getByName(param.value)
+                                var addr = InetAddress.getByName(param.value)
                                 check(addr.isMulticastAddress) { "Invalid multicast address !" }
                                 builder.setDestination(param.value)
                             } catch (e: UnknownHostException) {

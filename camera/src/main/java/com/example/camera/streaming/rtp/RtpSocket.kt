@@ -2,10 +2,12 @@ package com.example.camera.streaming.rtp
 
 import com.example.camera.streaming.rtcp.SenderReport
 import java.io.IOException
+import java.net.MulticastSocket
 
 
 class RtpSocket{
     private val mReport: SenderReport ? = null
+    private var mSocket: MulticastSocket? = null
     fun getRtcpSocket(): SenderReport {
 
         return mReport!!
@@ -13,6 +15,10 @@ class RtpSocket{
 
     fun getLocalPort(): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    fun setTimeToLive(mTTL: Int) {
+        mSocket!!.timeToLive = mTTL
     }
 
     /**
